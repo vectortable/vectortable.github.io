@@ -1,0 +1,409 @@
+<!--
+Copyright (C) 2014 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+          body {
+            overflow:hidden;
+          }
+      div{
+             text-align:center;
+            vertical-align:middle;
+            color:#FFFFFF;
+            background-color:#000000;
+            font-family:Verdana, Geneva, sans-serif;
+            font-size:40px;
+        }
+    .msgStyle1
+    {
+        margin-top: 0px;
+        position: absolute;
+        width: 320px;
+        top: 10px;
+        left: 50px;
+        height: 100px;
+        right: 370px;
+    }
+    .myCanvas1
+    {
+        margin-top: 0px;
+        position: absolute;
+        width: 520px;
+        top: 400px;
+        left: 400px;
+        height: 300px;
+    }
+    </style>
+    <title>Tic-Tac-Toe</title>
+  </head>
+  <body>
+        <DIV class="msgStyle1" id="message"> </DIV>
+
+
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <script src="board.js"></script>
+    <!--  <script src="tictactoe.js"></script>  -->
+    <script type="text/javascript">
+      window.onload = function()
+      {
+          //canvas drawing
+//          console.log('new version 123 b4 mboard.winninglocation: ');
+          canvas = document.getElementById("board");
+//          console.log('after mboard.winninglocation: ');
+          context = canvas.getContext("2d");
+//          console.log('window on load 2d ');
+          mBoard = new board(context);
+//          console.log('window on load after mboard context ');
+          favIcon = document.getElementById("favIcon");
+          centerTextCanvas = document.createElement('canvas');
+//          console.log('window on load ss ');
+//          console.log('window on load: ');
+
+//        cast.receiver.logger.setLevelValue(0);
+        window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+//        console.log('Starting Receiver Manager');
+
+        // handler for the 'ready' event
+        castReceiverManager.onReady = function(event) {
+//          console.log('Received Ready event: ' + JSON.stringify(event.data));
+          window.castReceiverManager.setApplicationState("Application status is ready...");
+        };
+        
+        // handler for 'senderconnected' event
+        castReceiverManager.onSenderConnected = function(event) {
+//          console.log('Received Sender Connected event: ' + event.data);
+//          console.log('Received Sender Connected event ');
+//          console.log(window.castReceiverManager.getSender(event.data).userAgent);
+        };
+        
+        // handler for 'senderdisconnected' event
+        castReceiverManager.onSenderDisconnected = function(event) {
+//          console.log('Received Sender Disconnected event: ' + event.data);
+          if (window.castReceiverManager.getSenders().length == 0) {
+                window.close();
+              }
+        };
+        
+        // handler for 'systemvolumechanged' event
+        castReceiverManager.onSystemVolumeChanged = function(event) {
+//          console.log('Received System Volume Changed event: ' + event.data['level'] + ' ' +
+//              event.data['muted']);
+        };
+
+        // create a CastMessageBus to handle messages for a custom namespace
+        window.messageBus =
+          window.castReceiverManager.getCastMessageBus(
+              'urn:x-cast:com.64ktech.cast.ttt',
+                                                       cast.receiver.CastMessageBus.MessageType.JSON);
+              
+//              window.messageBus = window.castReceiverManager.getCastMessageBus(cast.receiver.CastMessageBus.MessageType.JSON);
+
+        // handler for the CastMessageBus message event
+        window.messageBus.onMessage = function(event) {
+          //send command to get executed
+//          console.log('Message received ...');
+          commandReceived(event.data);
+
+          // inform all senders on the CastMessageBus of the incoming message event
+          // sender message listener will be invoked
+          window.messageBus.send(event.senderId, event.data);
+        }
+
+        // initialize the CastReceiverManager with an application status message
+        window.castReceiverManager.start({statusText: "Application is starting"});
+//        console.log('Receiver Manager started');
+
+      };   //end of onLoad
+    
+      // utility function to display the text message in the input field
+      function displayText(text) {
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "blue";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+//        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 0, 1280 - 300, 40);
+        context.clearRect(0, 0, 200, 50);
+        context.fillText(text, 10, 50);
+      };
+    
+    function displayTextTop(text) {
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F30A00";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 0, 1280 - 300, 40);
+        context.clearRect(0, 0, 200, 50);
+        context.fillText(text, 10, 25);
+    };
+    
+    // utility function to display the text message in the input field
+    function displayTextBottom(text) {
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#FF0FFE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 720 - 40, 1280, 50);
+        context.fillText(text, 10, 720 - 10);
+    };
+    
+    function displayTextYourTurn(text) {
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F000FE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        context.clearRect(0, (720 - 60) / 2.0 - 40, 300, 100);
+        context.fillText(text, 10, (720 - 60) / 2.0 - 10);
+    };
+    
+    function displayTextGameRuleMsg(text) {  //displayTextGameRuleMsg
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F0FFFE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "23px Times New Roman";  //"30px Courier New";
+//        context.clearRect(1280 - 200, (720 - 60) / 2.0 - 40, 300, 100);
+//        context.fillText(text, 1280-250, (720 - 60) / 2.0 - 10);
+        context.fillText(text, 1280-300, 25);
+    };
+    
+    function displayTextYourVoiceStatusMsg(text) {
+        //        console.log(text);
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "17px Times New Roman";  //"30px Courier New";
+        var yMargin = 150;
+        context.clearRect(1280-300, yMargin, 1280, 200);
+        var myStatusText = 'Your Voice Chat Status:';
+        context.fillText(myStatusText, 1280-300, yMargin);
+        
+        //incoming msg
+        yMargin = yMargin + 50;
+        context.fillStyle = "#700000";  //color
+        context.font = "25px Times New Roman";  //"30px Courier New";
+        context.fillText(text,1280-300, yMargin);
+    };
+    function displayTextPeerVoiceStatusMsg(text) {
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "17px Times New Roman";  //"30px Courier New";
+        console.log('displayTextPeerVoiceStatusMsg clearrect ' + text);
+        var yMargin = 720 / 2 + 150;
+        context.clearRect(1280-300, yMargin, 1280, 200);
+        var myStatusText = 'Peer Voice Chat Status:';
+        context.fillText(myStatusText, 1280-300, yMargin);
+        
+        //incoming msg
+        context.fillStyle = "#700000";  //color
+        context.font = "25px Times New Roman";  //"30px Courier New";
+        context.fillText(text, 1280-300, yMargin + 60);
+    };
+    
+    function displayTextWaitingForPlayerMsg(text) {
+//        console.log(text);
+        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F0FFFE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "70px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(1280 - 200, (720 - 60) / 2.0 - 40, 300, 100);
+        context.fillText(text, 280, 200);
+    };
+    
+    function displayWinningMsg(text) {
+        //        console.log('displayWinningMsg canvas.width:' + canvas.width);
+        //document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        //centerTextCanvas = document.createElement('canvas');
+        document.body.appendChild(centerTextCanvas);
+        centerTextCanvas.style.position = "absolute";
+        centerTextCanvas.width = 1280;
+        centerTextCanvas.height = 150;
+        centerTextCanvas.style.left = 10 + "px";
+        centerTextCanvas.style.top = 300 + "px";
+        //document.body.appendChild(centerTextCanvas);
+        //        console.log('displayWinningMsg text:' + text);
+        
+        var context = centerTextCanvas.getContext("2d");
+        context.fillStyle = "#FF0000"; //"#00FF00";  //color
+        context.font = "60px Times New Roman";  //"30px Courier New";
+        
+        //context.clearRect(0, 0, 1280, 40);
+        
+        var textDimensions = context.measureText(text);
+        var textWidth = textDimensions.width;
+        context.fillText(text, (centerTextCanvas.width - textWidth) * 0.5, centerTextCanvas.height - 100);
+        
+        //document.body.removeChild(centerTextCanvas);
+        
+        //context.clearRect((canvas.width - textWidth) * 0.5, 350, textWidth, 60);
+    };
+    
+    function commandReceived(text){
+        if (text.ChromecastCommand == "CommandDrawCross")
+        {
+//            console.log('CommandReceived drawcross ');
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+            mBoard.drawCross(text.CellJCoordinate, text.CellICoordinate);
+//            console.log('CommandReceived drawX I: ' + text.CellICoordinate);
+//            console.log('CommandReceived drawX J: ' + text.CellJCoordinate);
+        }
+        else if (text.ChromecastCommand == "CommandDrawNaught")
+        {
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+//            console.log('CommandReceived drawnaught');
+            mBoard.drawNaught(text.CellJCoordinate, text.CellICoordinate);
+//            console.log('CommandReceived drawO I: ' + text.CellICoordinate);
+//            console.log('CommandReceived drawO J: ' + text.CellJCoordinate);
+
+        }
+        else if (text.ChromecastCommand == "CommandCreateBoard")
+        {
+//            console.log('CommandReceived CommandCreateBoard level' + text.BoardSizeLevel);
+            mBoard.reset();
+            mBoard.clear(text.BoardSizeLevel);
+            mBoard.drawGrid(text.BoardSizeLevel);
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+        }
+        else if (text.ChromecastCommand == "CommandDrawWinning")
+        {
+//            console.log('CommandReceived CommandDrawWinning new gamerule: ' + text.GameRule);
+//            mBoard.drawWinningLocation(text.WinningLocation);
+            mBoard.drawWinningLocation(text);
+        }
+        else if (text.ChromecastCommand == "CommandResetBoard")
+        {
+//            console.log('CommandReceived CommandResetBoard');
+
+            if (centerTextCanvas.parentNode)
+            {
+                //                console.log('CommandReceived CommandResetBoard remove centertextcanvas');
+                document.body.removeChild(centerTextCanvas);
+            }
+            mBoard.reset();
+        }
+        else if (text.ChromecastCommand == "CommandGameEndNoWinner")
+        {
+//            console.log('CommandReceived CommandGameEndNoWinner');
+            displayText(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandGameEndWithWinner")
+        {
+//            console.log('CommandReceived CommandGameEndWithWinner');
+            displayText(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandMsgReceived")
+        {
+//            console.log('CommandReceived CommandMsgReceived');
+            displayTextTop(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandMsgSent")
+        {
+//            console.log('CommandReceived CommandMsgSent');
+            displayTextBottom(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandTurnMsg")
+        {
+//            console.log('CommandReceived CommandTurnMsg');
+            displayTextYourTurn(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandGameRuleMsg")
+        {
+//            console.log('CommandReceived CommandGameRuleMsg');
+            displayTextGameRuleMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandWaitingMsg")
+        {
+//            console.log('CommandReceived CommandWaitingMsg');
+            displayTextWaitingForPlayerMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "YourVoiceStatusMsg")
+        {
+            //            console.log('CommandReceived YourVoiceStatusMsg');
+            displayTextYourVoiceStatusMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "PeerVoiceStatusMsg")
+        {
+            //            console.log('CommandReceived PeerVoiceStatusMsg');
+            displayTextPeerVoiceStatusMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandWinningMsg")
+        {
+            //            console.log('CommandReceived CommandWinningMsg');
+            displayWinningMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandClearCenterMsg")
+        {
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+        }
+        else
+        {
+//            console.log('CommandReceived others command');
+        }
+
+    }
+
+
+    </script>
+
+    <canvas id="board" width="1280" height="720" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#BDBDBD" />
+  </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+	<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+	<title></title>
+	<style type="text/css">
+
+    .gamemodeOL ol {
+            counter-reset: item;
+            margin-left: 0em;
+            padding-left: 0em;
+        }
+    .gamemodeOL li {
+        display: block;
+
+        margin-left: 8em;
+    }
+    .gamemodeOL li:before {
+        display: inline-block;
+        content: "Game mode "counter(item) ":";
+        counter-increment: item;
+        width: 6.7em;
+        margin-left: -7em;
+    }
+
+	</style>
+</head>
+<body dir="LTR" lang="en-US">
+<span style="margin-bottom: 0in"><font color="#000000"><font face="Noteworthy"><font size="4"><b><br><br>App
+will observe all standard chess pieces movement rules. &nbsp;Those
+included basic, castling, pawn promotion, and en passant moves. <br><br>
+
+<div class="gamemodeOL">
+<font color="#0000ff">There are four game modes:</font><br>
+<ol>
+<li> Play On A Single iDevice &nbsp;-&nbsp; Two players play using a single iDevice.</li>
+<li> Play On Two iDevices Via Local Wifi &nbsp;-&nbsp; Two players play with individual iDevice via local WiFi.</li>
+<li> Online Live Via Game Center &nbsp;-&nbsp; Two players play against each other live across Internet via Game Center.</li>
+<li> Turn-based Via Game Center &nbsp;-&nbsp; Two players take turns 
+&nbsp;-&nbsp; not live &nbsp;-&nbsp; across Internet via Game Center.</li>
+</ol>
+</div>
+<br>
+
+<font color="#0000ff">For game modes that required two iDevices:</font><br>
+<ol type="A">
+<li>&nbsp;Player can choose to resign the match which will result in a loss. </li>
+<li>&nbsp;Player can request for a draw game. &nbsp;The match will result in a tied
+game if the other player agreed to.</li><br>
+</ol>
+
+<font color="#0000ff">The match will end with result in a won/lost status if:</font><br>
+<ol type="A">
+    <li>&nbsp;Checkmate.</li>
+    <li>&nbsp;One player is resigning.</li>
+    <li>&nbsp;Take turn timeout expiration for a player. &nbsp;This
+only applied to game mode 4. &nbsp;The
+player with timeout expiration will result in lost match. &nbsp;This
+timeout is set at 24 hours.</li>
+    <li>&nbsp;A king has been captured.  &nbsp;This resulted when a player's king was in check but the player
+did not make a defensive move to remove the threat. The other player
+will capture the king when his turn to move. &nbsp;Note that app will
+highlight the king and all attackers involved. &nbsp;But it will not
+prevent a non-defensive move.</li><br>
+    </ol>
+
+<font color="#0000ff">The match will end with result in a draw status if:</font><br>
+<ol type="A">
+<li>  &nbsp;There are only kings left on game board.</li>
+<li>  &nbsp;One player has only a king chess piece left and the other
+player has a king and a bishop.</li>
+<li>  &nbsp;One player has only a king chess piece left and the other player has a king and a
+knight.</li>
+<li>  &nbsp;A draw was requested and accepted by both players.</li><br>
+</ol>
+
+<font color="#0000ff">Others:</font><br>
+<ol type="A">
+    <li>  &nbsp;In game mode 1, chess pieces can be removed at the beginning of the match.</li>
+    <li>  &nbsp;For game mode 2, 3, and 4 you can send text massages while game is active.</li>
+    <li>  &nbsp;For game mode 3, you can also activate voice chat.</li>
+    <li>  &nbsp;In game mode 4, a forfeit will result with a lost match.</li>
+<br>
+</ol>
+
+</b></font></font></font>
+</span>
+
+</body></html>

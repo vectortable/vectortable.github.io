@@ -1,0 +1,479 @@
+<!--
+Copyright (C) 2014 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+          body {
+            overflow:hidden;
+          }
+      div{
+             text-align:center;
+            vertical-align:middle;
+            color:#FFFFFF;
+            background-color:#000000;
+            font-family:Verdana, Geneva, sans-serif;
+            font-size:40px;
+        }
+    .msgStyle1
+    {
+        margin-top: 0px;
+        position: absolute;
+        width: 320px;
+        top: 10px;
+        left: 50px;
+        height: 100px;
+        right: 370px;
+    }
+    .myCanvas1
+    {
+        margin-top: 0px;
+        position: absolute;
+        width: 520px;
+        top: 400px;
+        left: 400px;
+        height: 300px;
+    }
+    .myTextNotationsStyle
+    {
+        margin-top: 0px;
+        position: absolute;
+        width: 250px;
+        height: 100px;
+        top: 55%;
+        left: 0px;
+        background:'gray';
+        z-index:0;
+        overflow:hidden;
+
+        //columns:40;
+        //rows:5;
+    }
+
+    </style>
+    <title>Chess</title>
+  </head>
+  <body>
+<!--        <DIV class="msgStyle1" id="message"> </DIV>-->
+
+<canvas id="board" width="1280" height="720" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#BDBDBD;z-index:-1">
+</canvas>
+
+<!--<textarea id='textareaNotations' columns="40" rows="5" top="720" style="position:absolute;top:55%;left:0px;width:250px;height:100px;background:#FF00DB;z-index:0;overflow:hidden"/>-->
+<!--</textarea>-->
+
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery.min.js"></script>
+    <script src="board.js"></script>
+    <script type="text/javascript">
+    window.onload = function()
+    {
+    
+          //  test text area
+ //         myTextArea = document.createElement('textarea');
+ 
+        //  myTextAreaNotations = document.getElementById('textareaNotations');
+     //     myTextArea.scrollTop = myTextArea.scrollHeight;
+          //myTextArea.value = "  this is line 1 \n  this is line 2 \n";
+
+        myTextAreaNotations = document.createElement('textarea');
+        canvas = document.getElementById("board");
+        contextCanvas = canvas.getContext("2d");
+        mBoard = new board(contextCanvas);
+        centerTextCanvas = document.createElement('canvas');
+
+        window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+        // handler for the 'ready' event
+        castReceiverManager.onReady = function(event)
+        {
+            console.log('Received Ready event: ' + JSON.stringify(event.data));
+            window.castReceiverManager.setApplicationState("Application status is ready...");
+        };
+        
+        // handler for 'senderconnected' event
+        castReceiverManager.onSenderConnected = function(event)
+        {
+            
+        };
+        
+        // handler for 'senderdisconnected' event
+        castReceiverManager.onSenderDisconnected = function(event)
+        {
+            if (window.castReceiverManager.getSenders().length == 0)
+            {
+                window.close();
+            }
+        };
+        
+        // handler for 'systemvolumechanged' event
+        castReceiverManager.onSystemVolumeChanged = function(event) {
+        };
+
+        // create a CastMessageBus to handle messages for a custom namespace
+        window.messageBus =
+          window.castReceiverManager.getCastMessageBus(
+              'urn:x-cast:com.64ktech.cast.chess', cast.receiver.CastMessageBus.MessageType.JSON);
+
+        // handler for the CastMessageBus message event
+        window.messageBus.onMessage = function(event) {
+          //send command to get executed
+          console.log('commandreceived: ' + event);
+            commandReceived(event);
+            
+          // inform all senders on the CastMessageBus of the incoming message event
+          // sender message listener will be invoked
+          window.messageBus.send(event.senderId, event.data);
+        }
+
+        // initialize the CastReceiverManager with an application status message
+        window.castReceiverManager.start({statusText: "Application is starting"});
+//        console.log('Receiver Manager started');
+
+       // var myTextArea = document.getElementById('textarea_id');
+       // myTextArea.value = " this is line 1 \nthis is line 2 \n";
+
+    };   //end of onLoad
+    
+    function createNotationsView()
+    {
+       //<textarea id='textareaNotations' columns="40" rows="5" top="720" style="position:absolute;top:55%;left:0px;width:250px;height:100px;background:#FF00DB;z-index:0;overflow:hidden"/>
+        //</textarea>
+        //myTextAreaNotations = document.createElement('textarea');
+        myTextAreaNotations.cols = "40";
+        myTextAreaNotations.rows = "5";
+        
+        //myTextAreaNotations.style.width = "250px";
+        //myTextAreaNotations.style.height = "100px";
+        
+        myTextAreaNotations.top = "720";
+        //myTextAreaNotations.style = 'myTextNotationsStyle';
+        myTextAreaNotations.className = 'myTextNotationsStyle';
+        document.body.appendChild(myTextAreaNotations);
+    }
+      // utility function to display the text message in the input field
+      function displayText(text)
+      {
+//        console.log(text);
+//        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "blue";  //color
+        context.fillStyle = "DarkOliveGreen"; //"#F0FFFE";  //color
+        context.font = "20px Times New Roman";  //"30px Courier New";
+//        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 0, 1280, 40);
+        context.clearRect(0, 0, 200, 50);
+        context.fillText(text, 10, 50);
+      };
+    
+    function displayTextTop(text) {
+//        console.log(text);
+//        document.getElementById("message").innerHTML=text;
+//        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F30A00";  //color
+        context.fillStyle = "DarkCyan"; //"#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 0, 1280, 40);
+        context.clearRect(0, 0, 200, 50);
+        context.fillText(text, 10, 25);
+    };
+    
+    // utility function to display the text message in the input field
+    function displayTextBottom(text) {
+//        console.log(text);
+//        document.getElementById("message").innerHTML=text;
+//        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#FF0FFE";  //color
+        context.fillStyle = "DarkCyan"; //"#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(0, 0, 1280, 50);
+        context.clearRect(0, 720 - 40, 1280, 50);
+        context.fillText(text, 10, 720 - 10);
+    };
+    
+    function displayTextNotations(text) {
+        //        console.log(text);
+        window.castReceiverManager.setApplicationState(text);
+        myTextAreaNotations.value = myTextAreaNotations.value + text;
+        myTextAreaNotations.scrollTop = myTextAreaNotations.scrollHeight;
+    };
+    
+    function displayTextYourTurn(text) {
+//        console.log(text);
+//        document.getElementById("message").innerHTML=text;
+//        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F000FE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "30px Times New Roman";  //"30px Courier New";
+        context.clearRect(0, (720 - 60) / 2.0 - 40, 300, 100);
+        context.fillText(text, 10, (720 - 60) / 2.0 - 10);
+    };
+    
+    function displayTextYourVoiceStatusMsg(text) {
+        //        console.log(text);
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "17px Times New Roman";  //"30px Courier New";
+        var yMargin = 60;
+        context.clearRect(1280-300, yMargin, 1280, 200);
+        var myStatusText = 'Your Voice Chat Status:';
+        context.fillText(myStatusText, 1280-300, yMargin);
+        
+        //incoming msg
+        yMargin = yMargin + 50;
+        context.fillStyle = "#700000";  //color
+        context.font = "25px Times New Roman";  //"30px Courier New";
+        context.fillText(text,1280-300, yMargin);
+    };
+    function displayTextPeerVoiceStatusMsg(text) {
+            var canvas = document.getElementById("board");
+            var context = canvas.getContext("2d");
+            context.fillStyle = "#F0FFFE";  //color
+            context.font = "17px Times New Roman";  //"30px Courier New";
+            console.log('displayTextPeerVoiceStatusMsg clearrect ' + text);
+            var yMargin = 720 / 2;
+            context.clearRect(1280-300, yMargin, 1280, 200);
+            var myStatusText = 'Peer Voice Chat Status:';
+            context.fillText(myStatusText, 1280-300, yMargin);
+            
+            //incoming msg
+            context.fillStyle = "#700000";  //color
+            context.font = "25px Times New Roman";  //"30px Courier New";
+            context.fillText(text, 1280-300, yMargin + 60);
+    };
+    
+    function displayTextWaitingForPlayerMsg(text) {
+//        console.log(text);
+//        document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+//        context.fillStyle = "#F0FFFE";  //color
+        context.fillStyle = "#F0FFFE";  //color
+        context.font = "70px Times New Roman";  //"30px Courier New";
+        //        context.clearRect(1280 - 200, (720 - 60) / 2.0 - 40, 300, 100);
+        context.fillText(text, 280, 200);
+    };
+    
+    function displayWinningMsg(text) {
+        console.log('displayWinningMsg canvas.width:' + canvas.width);
+        //document.getElementById("message").innerHTML=text;
+        window.castReceiverManager.setApplicationState(text);
+        
+        //centerTextCanvas = document.createElement('canvas');
+        document.body.appendChild(centerTextCanvas);
+        centerTextCanvas.style.position = "absolute";
+        centerTextCanvas.width = 1280;
+        centerTextCanvas.height = 150;
+        centerTextCanvas.style.left = 10 + "px";
+        centerTextCanvas.style.top = 300 + "px";
+        //document.body.appendChild(centerTextCanvas);
+        console.log('displayWinningMsg text:' + text);
+        
+        var context = centerTextCanvas.getContext("2d");
+        context.fillStyle = "#FF0000"; //"#00FF00";  //color
+        context.font = "60px Times New Roman";  //"30px Courier New";
+
+        //context.clearRect(0, 0, 1280, 40);
+        
+        var textDimensions = context.measureText(text);
+        var textWidth = textDimensions.width;
+        context.fillText(text, (centerTextCanvas.width - textWidth) * 0.5, centerTextCanvas.height - 100);
+        
+        //document.body.removeChild(centerTextCanvas);
+        
+        //context.clearRect((canvas.width - textWidth) * 0.5, 350, textWidth, 60);
+    };
+
+    //event.senderId, event.data);
+//    function commandReceived(text){
+    function commandReceived(event){
+        var text = event.data;
+        if (text.ChromecastCommand == "CommandMovingObjects")
+        {
+            //console.log('CommandReceived CommandMovingObjects');
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+            mBoard.movingObjects(event);
+        }
+        else if (text.ChromecastCommand == "CommandCreateBoard")
+        {
+            console.log('CommandReceived CommandCreateBoard ');
+            
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+            
+            if (myTextAreaNotations.parentNode)
+            {
+                document.body.removeChild(myTextAreaNotations);
+            }
+            mBoard.reset();
+            mBoard.clear(text.BoardSizeLevel);   // draw chess pieces symbols
+            mBoard.drawGrid(text.BoardSizeLevel);  //draw squares
+            mBoard.drawChessPiecesLabels();
+            createNotationsView();
+            //myTextAreaNotations = document.getElementById('textareaNotations');
+        }
+        else if (text.ChromecastCommand == "CommandEatingObjects")
+        {
+            console.log('CommandReceived CommandEatingObjects ');
+            mBoard.eatingObjects(event);
+        }
+        else if (text.ChromecastCommand == "CommandHiLiCells")
+        {
+            console.log('CommandReceived CommandHiLiCells ');
+            mBoard.hiLiCells(event);
+        }
+        else if (text.ChromecastCommand == "CommandHiLiCheckedCells")
+        {
+            console.log('CommandReceived CommandHiLiCheckedCells ');
+            mBoard.hiLiCheckedCells(event);
+        }
+        else if (text.ChromecastCommand == "CommandRemoveHints")
+        {
+            console.log('CommandReceived CommandRemoveHints ');
+            mBoard.removeHints(event);
+        }
+        else if (text.ChromecastCommand == "CommandResetBoard")
+        {
+            console.log('CommandReceived CommandResetBoard');
+            if (centerTextCanvas.parentNode)
+            {
+                console.log('CommandReceived CommandResetBoard remove centertextcanvas');
+                document.body.removeChild(centerTextCanvas);
+            }
+            if (myTextAreaNotations.parentNode)
+            {
+                document.body.removeChild(myTextAreaNotations);
+                myTextAreaNotations.value = "";
+            }
+            mBoard.reset();
+        }
+        else if (text.ChromecastCommand == "CommandGameEndNoWinner")
+        {
+//            console.log('CommandReceived CommandGameEndNoWinner');
+            displayText(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandGameEndWithWinner")
+        {
+//            console.log('CommandReceived CommandGameEndWithWinner');
+            displayText(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandMsgReceived")
+        {
+//            console.log('CommandReceived CommandMsgReceived');
+            displayTextTop(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandMsgSent")
+        {
+//            console.log('CommandReceived CommandMsgSent');
+            displayTextBottom(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandTurnMsg")
+        {
+//            console.log('CommandReceived CommandTurnMsg');
+            displayTextYourTurn(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "YourVoiceStatusMsg")
+        {
+//            console.log('CommandReceived YourVoiceStatusMsg');
+            displayTextYourVoiceStatusMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "PeerVoiceStatusMsg")
+        {
+            //            console.log('CommandReceived PeerVoiceStatusMsg');
+            displayTextPeerVoiceStatusMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandWaitingMsg")
+        {
+//            console.log('CommandReceived CommandWaitingMsg');
+            displayTextWaitingForPlayerMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandInitialGameData")
+        {
+//           console.log('CommandReceived CommandInitialGameData ' + text.SendingMessage);
+            mBoard.cellColorPairsObject(text);
+        }
+        else if (text.ChromecastCommand == "CommandRemoveCell")
+        {
+            //           console.log('CommandReceived CommandInitialGameData ' + text.SendingMessage);
+            mBoard.removeCellCommand(text);
+        }
+        else if (text.ChromecastCommand == "CommandDrawAChessPiece")
+        {
+            //           console.log('CommandReceived CommandInitialGameData ' + text.SendingMessage);
+            mBoard.drawAChessPieceCommand(text);
+        }
+        else if (text.ChromecastCommand == "CommandWinningMsg")
+        {
+            console.log('CommandReceived CommandWinningMsg');
+            displayWinningMsg(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandCPNotation")
+        {
+            console.log('CommandReceived CommandCPNotation');
+            displayTextNotations(text.SendingMessage);
+        }
+        else if (text.ChromecastCommand == "CommandClearCenterMsg")
+        {
+            if (centerTextCanvas.parentNode)
+            {
+                document.body.removeChild(centerTextCanvas);
+            }
+        }
+        else if (text.ChromecastCommand == "CommandDrawBoardChessPieces")
+        {
+            console.log('CommandReceived CommandDrawBoardChessPieces ');
+            mBoard.drawBoardChessPieces(text);
+        }
+        else
+        {
+            console.log('CommandReceived others command');
+
+        }
+
+    }
+
+    </script>
+<!--
+    <canvas id="board" width="1280" height="720" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#BDBDBD"/>
+
+
+    <canvas id="board" width="1280" height="720" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#BDBDBD;z-index:-1" />
+    
+    <textarea id='textarea_id' columns="40" rows="10" style="position:absolute;top:0px;left:0px;width:300px;height:100px;background:#FF00DB;z-index:0;"> </textarea>
+    -->
+  </body>
+</html>
