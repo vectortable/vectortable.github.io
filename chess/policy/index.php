@@ -6,7 +6,7 @@
 	<meta name="generator" content="LibreOffice 6.2.8.2 (MacOSX)"/>
 	<meta name="author" content="user one"/>
 	<meta name="created" content="2012-02-19T00:00:00.020075400"/>
-	<meta name="changed" content="2020-01-12T19:00:02.112536718"/>
+	<meta name="changed" content="2020-01-12T18:59:43.901912984"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.08in }
@@ -25,7 +25,7 @@ Updated/Effective Date January 1, 2020</font></font></font></p>
 
 </p>
 <p style="margin-bottom: 0in"><font color="#000000"><font face="Helvetica, sans-serif"><font size="3" style="font-size: 12pt">We
-at Tic Tac Toe For Chomecast do not collect/retain user
+at Chess For Chomecast do not collect/retain user
 usage/information/data. </font></font></font>
 </p>
 <p style="margin-bottom: 0in"><br/>
