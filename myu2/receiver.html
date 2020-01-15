@@ -1,0 +1,322 @@
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                overflow:hidden;
+            }
+        div{
+            text-align:center;
+            vertical-align:middle;
+            color:#FFFFFF;
+            background-color:#000000;
+            font-family:Verdana, Geneva, sans-serif;
+            font-size:40px;
+        }
+        .msgStyle1
+        {
+            margin-top: 0px;
+            position: absolute;
+            width: 320px;
+            top: 10px;
+            left: 50px;
+            height: 100px;
+            right: 370px;
+        }
+        .myCanvas1
+        {
+            margin-top: 0px;
+            position: absolute;
+            width: 520px;
+            top: 400px;
+            left: 400px;
+            height: 300px;
+        }
+        </style>
+        
+        <title>iYouTube</title>
+<!--        <script src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>-->
+    </head>
+    <body>
+        <DIV class="msgStyle1" id="message"> </DIV>
+        <video id='media' width="1260" height="700" autoplay /video>
+<!--        <video id='videoloop' width="1260" height="700" loop autoplay /video>-->
+<!--        <video id='videolist' width="1260" height="700" autoplay /video>-->
+
+                myVideo = document.getElementById('media');
+                myVideo.loop = false;
+                myVideo.onended = function() {
+                
+                
+                };
+                window.mediaElement = myVideo;
+              //window.mediaElement = document.getElementById('media');
+              //window.mediaElement = document.getElementById('videoloop');
+              window.mediaManager = new cast.receiver.MediaManager(window.mediaElement);
+<!--              window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();-->
+
+
+<script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<!--<script src="board.js"></script>-->
+<script type="text/javascript">
+//        <script>
+            window.onload = function() {
+                 listRepeat = false;
+                 myVideo = document.getElementById('media');
+                 myVideo.loop = false;
+                 myVideo.type = "video/mp4";
+                 myVideo.onended = videoPlayEnded;
+                 //function() {              };
+                 window.mediaElement = myVideo;
+                 //window.mediaElement = document.getElementById('media');
+                 //window.mediaElement = document.getElementById('videoloop');
+                 window.mediaManager = new cast.receiver.MediaManager(window.mediaElement);
+                 
+                 
+                 canvas = document.getElementById("board");
+                 contextCanvas = canvas.getContext("2d");
+    //             mBoard = new board(contextCanvas);
+
+                 window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+                 
+                 // handler for the 'ready' event
+                 castReceiverManager.onReady = function(event) {
+                     console.log('Received Ready event: ' + JSON.stringify(event.data));
+                     window.castReceiverManager.setApplicationState("Application status is ready...");
+                 };
+                 
+                 // handler for 'senderconnected' event
+                 castReceiverManager.onSenderConnected = function(event) {
+                 };
+                 
+                 // handler for 'senderdisconnected' event
+                 castReceiverManager.onSenderDisconnected = function(event) {
+                     //if (window.castReceiverManager.getSenders().length == 0) {
+                     //    displayText('sender disconnected command b4');
+                     //    window.close();
+                     //}
+                     
+                     //var text = event.data;
+                     
+                     //displayText('sender disconnected command after');
+                 };
+                 
+                 // handler for 'systemvolumechanged' event
+                 castReceiverManager.onSystemVolumeChanged = function(event) {
+                 };
+                 
+                 // create a CastMessageBus to handle messages for a custom namespace
+                 window.messageBus =
+                 window.castReceiverManager.getCastMessageBus(
+                                                              'urn:x-cast:com.64ktech.cast.checkers', cast.receiver.CastMessageBus.MessageType.JSON);
+                                                              //urn:x-cast:com.64ktech.cast.iyoutube
+                                                              // handler for the CastMessageBus message event
+                  window.messageBus.onMessage = function(event) {
+                      //send command to get executed
+                      console.log('commandreceived: ' + event);
+                      commandReceived(event);
+                      
+                      // inform all senders on the CastMessageBus of the incoming message event
+                      // sender message listener will be invoked
+                      window.messageBus.send(event.senderId, event.data);
+                  }
+
+              // initialize the CastReceiverManager with an application status message
+              window.castReceiverManager.start({statusText: "Application is starting"});
+              //        console.log('Receiver Manager started');
+
+            };  //end of onLoad
+
+        // utility function to display the text message in the input field
+        function displayText(text) {
+            //        console.log(text);
+            document.getElementById("message").innerHTML=text;
+            window.castReceiverManager.setApplicationState(text);
+            
+            var canvas = document.getElementById("board");
+            var context = canvas.getContext("2d");
+            //        context.fillStyle = "blue";  //color
+            context.fillStyle = "#F0FFFE";  //color
+            context.font = "20px Times New Roman";  //"30px Courier New";
+            //        context.clearRect(0, 0, 1280, 50);
+            context.clearRect(0, 0, 1280, 40);
+            context.clearRect(0, 0, 200, 50);
+            context.fillText(text, 10, 50);
+        };
+        
+        function displayTextTop(text) {
+            //        console.log(text);
+            document.getElementById("message").innerHTML=text;
+            window.castReceiverManager.setApplicationState(text);
+            
+            var canvas = document.getElementById("board");
+            var context = canvas.getContext("2d");
+            //        context.fillStyle = "#F30A00";  //color
+            context.fillStyle = "#F0FFFE";  //color
+            context.font = "30px Times New Roman";  //"30px Courier New";
+            //        context.clearRect(0, 0, 1280, 50);
+            context.clearRect(0, 0, 1280, 40);
+            context.clearRect(0, 0, 200, 50);
+            context.fillText(text, 10, 25);
+        };
+        
+        // utility function to display the text message in the input field
+        function displayTextBottom(text) {
+            //        console.log(text);
+            document.getElementById("message").innerHTML=text;
+            window.castReceiverManager.setApplicationState(text);
+            
+            var canvas = document.getElementById("board");
+            var context = canvas.getContext("2d");
+            //        context.fillStyle = "#FF0FFE";  //color
+            context.fillStyle = "#F0FFFE";  //color
+            context.font = "30px Times New Roman";  //"30px Courier New";
+            //        context.clearRect(0, 0, 1280, 50);
+            context.clearRect(0, 720 - 40, 1280, 50);
+            context.fillText(text, 10, 720 - 10);
+        };
+        
+        function CreateSingleVideoPlay(text)
+        {
+            displayTextBottom(text);
+            //<video id='media' width="1260" height="700" loop autoplay>
+            //<video id='videoloop' width="1260" height="700" loop autoplay>
+            //<video id='videolist' width="1260" height="700" autoplay>
+
+            window.mediaElement = document.getElementById('videolist');
+            window.mediaManager = new cast.receiver.MediaManager(window.mediaElement);
+            window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+            window.castReceiverManager.start();
+        };
+        
+        function CreateLoopVideoPlay(text)
+        {
+            displayTextBottom(text);
+            // window.mediaElement = document.getElementById('videolist');
+            // window.mediaManager = new cast.receiver.MediaManager(window.mediaElement);
+            // window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+            // window.castReceiverManager.start();
+        };
+
+        function PlayVideoSingle(text)
+        {
+            myVideo.loop = false;
+            myVideo.src = text.VideoFileURL;
+        };
+
+        function PlayVideoLoop(text)
+        {
+            myVideo.loop = true;
+            myVideo.src = text.VideoFileURL;
+        };
+
+        function PlayVideoInTheList(text)
+        {
+            list = text.PlayList;
+            listRepeat = text.ListRepeat;
+            httpServerURL = text.HTTPServerAddress;
+            videoIndex = 0;
+            var fileURL = httpServerURL + "/" + list[videoIndex++];
+            
+            //displayText(fileURL);
+            myVideo.src = fileURL;
+        };
+
+        function PlayVideoSingleExternal(text)
+        {
+            myVideo.loop = false;
+            myVideo.src = text.VideoFileURL;
+        };
+
+        function PlayVideoSingleRepeatedExternal(text)
+        {
+            myVideo.loop = true;
+            myVideo.src = text.VideoFileURL;
+        };
+
+        function DisconnectCast(text)
+        {
+            //if (window.castReceiverManager.getSenders().length == 0) {
+            displayText('sender DisconnectCast command close ');
+            window.close();
+            //}
+        };
+        function videoPlayEnded()
+        {
+            displayText('video Play Ended');
+
+            if (videoIndex < list.length)
+            {
+                //myVideo.src = list[videoIndex];
+                var fileURL = httpServerURL + "/" + list[videoIndex++];
+                myVideo.src = fileURL;
+            }
+            else if (listRepeat)
+            {
+                videoIndex = 0;
+                var fileURL = httpServerURL + "/" + list[videoIndex++];
+                myVideo.src = fileURL;
+            }
+            
+            
+        };
+
+        function commandReceived(event)
+        {
+            var text = event.data;
+            console.log('u commandreceived Message [' + event.senderId + ']: ' + event.data);
+            console.log('commandreceived text.ChromecastCommand: ' + text.ChromecastCommand)
+            console.log('commandreceived text.VideoFileURL: ' + text.VideoFileURL)
+            if (text.ChromecastCommand == "VideoSinglePlayCommand")
+            {
+                //console.log('CommandReceived CreateSingleVideoPlay');
+                //myVideo.loop = false;
+                PlayVideoSingle(text);
+                displayText(text.SendingMessage);
+            }
+            else if (text.ChromecastCommand == "VideoLoopPlayCommand")
+            {
+                //console.log('CommandReceived CreateLoopVideoPlay');
+                //myVideo.loop = true;
+                PlayVideoLoop(text);
+                //window.messageBus.send(event.senderId, 'received acknowledge');
+                displayText(text.SendingMessage);
+            }
+            else if (text.ChromecastCommand == "VideoListPlayCommand")
+            {
+                //console.log('CommandReceived CreateListVideoPlay');
+                displayText(text.SendingMessage);
+                PlayVideoInTheList(text);
+            }
+            else if (text.ChromecastCommand == "VideoSinglePlayExternalCommand")
+            {
+                displayText(text.SendingMessage);
+                PlayVideoSingleExternal(text);
+            }
+            else if (text.ChromecastCommand == "VideoSingleRepeatedPlayExternalCommand")
+            {
+                displayText(text.SendingMessage);
+                PlayVideoSingleRepeatedExternal(text);
+            }
+            else if (text.ChromecastCommand == "CommandDisconnectCast")
+            {
+                //console.log('CommandReceived CommandDisconnectCast'); CommandDisconnectCast
+                displayText(text.SendingMessage);
+                DisconnectCast(text);
+            }
+            else if (text.ChromecastCommand == "CommandWaitingMsg")
+            {
+                //console.log('CommandReceived CommandWaitingMsg');
+                displayTextTop(text.SendingMessage);
+            }
+            else
+            {
+                //console.log('CommandReceived others command');
+               // displayText(text.SendingMessage);
+            }
+            
+        }
+        </script>
+        <canvas id="board" width="1280" height="720" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#BDBDBD" />
+    </body>
+</html>
