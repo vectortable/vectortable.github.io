@@ -89,6 +89,12 @@
 </head>
 <body text="Chess For Chromecast And More App">
 
+<?php
+    session_start();
+    // Set session variables
+    $_SESSION["appname"] = "Chess For Chromecast And More";
+?>
+
 <p>
 <a href="https://itunes.apple.com/app/chess/id1061998883?mt=8">
 <img border="0" class="cplogo" src="chess_files/Icon-72.png">
@@ -136,7 +142,7 @@ via Game Center.
         <br>
         <a href="chess_files/gamerules.html">Game Rules</a><br>
         <br>
-        <div ms_positioning="text2D" class="style7"><a href="mailto:techsupport@vectortable.com">Contact Information</a></div>
+        <div ms_positioning="text2D" class="style7"><a href="javascript:winOpen();" techsupport.html="">Contact Information</a></div>
         <br>
         <br>
        
@@ -177,5 +183,15 @@ via Game Center.
         </p>
     </form>
 
+
+
+
+<script>
+function winOpen() {
+
+    window.open("/techsupport.html",null,"scrollbars=no,resizable=no,width=600,height=300,top=100,left=100");
+    
+}
+</script>
 
 </body></html>

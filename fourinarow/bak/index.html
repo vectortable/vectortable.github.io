@@ -67,6 +67,11 @@
         </style>
 </head>
 <body text="Four In A Row For Chromecast And More App">
+<?php
+    session_start();
+    // Set session variables
+    $_SESSION["appname"] = "Four In A Row For Chromecast And More";
+?>
 
 <p>
 <a href="https://itunes.apple.com/app/four-in-a-row/id877255078?mt=8">
@@ -104,7 +109,7 @@
         Have fun playing Four In A Row using your giant TV to share with family and friend instead of small iDevice screen.&nbsp; <br>
         <br>
         <br>
-        <div ms_positioning="text2D" class="style7"><a href="mailto:techsupport@vectortable.com">Contact Information</a></div>
+        <div ms_positioning="text2D" class="style7"><a href="javascript:winOpen();" techsupport.html="">Contact Information</a></div>
         <br>
         <br>
        
@@ -137,4 +142,11 @@
         </p>
     </form>
 
+<script>
+function winOpen() {
+    
+    window.open("/techsupport.html",null,"scrollbars=no,resizable=no,width=600,height=300,top=100,left=100");
+    
+}
+</script>
 </body></html>
