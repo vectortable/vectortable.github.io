@@ -37,7 +37,7 @@
 <!--        <script src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>-->
     </head>
     <body>
-        <DIV class="msgStyle1" id="message"> </DIV>
+<!--        <DIV class="msgStyle1" id="message"> </DIV>-->
         <video id='media' width="1260" height="700" autoplay /video>
 <!--        <video id='videoloop' width="1260" height="700" loop autoplay /video>-->
 <!--        <video id='videolist' width="1260" height="700" autoplay /video>-->
@@ -74,14 +74,14 @@
                  
                  
                  canvas = document.getElementById("board");
-                 contextCanvas = canvas.getContext("2d");
+                 //contextCanvas = canvas.getContext("2d");  // 02-23-20
     //             mBoard = new board(contextCanvas);
 
                  window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
                  
                  // handler for the 'ready' event
                  castReceiverManager.onReady = function(event) {
-                     console.log('Received Ready event: ' + JSON.stringify(event.data));
+                     //console.log('Received Ready event: ' + JSON.stringify(event.data));  // removed 02-23-20
                      window.castReceiverManager.setApplicationState("Application status is ready...");
                  };
                  
@@ -113,7 +113,7 @@
                                                               // handler for the CastMessageBus message event
                   window.messageBus.onMessage = function(event) {
                       //send command to get executed
-                      console.log('commandreceived: ' + event);
+                      //console.log('commandreceived: ' + event);  //removed 02-23-20
                       commandReceived(event);
                       
                       // inform all senders on the CastMessageBus of the incoming message event
@@ -130,6 +130,7 @@
         // utility function to display the text message in the input field
         function displayText(text) {
             //        console.log(text);
+            /*
             document.getElementById("message").innerHTML=text;
             window.castReceiverManager.setApplicationState(text);
             
@@ -142,10 +143,12 @@
             context.clearRect(0, 0, 1280, 40);
             context.clearRect(0, 0, 200, 50);
             context.fillText(text, 10, 50);
+             */
         };
         
         function displayTextTop(text) {
             //        console.log(text);
+            /*
             document.getElementById("message").innerHTML=text;
             window.castReceiverManager.setApplicationState(text);
             
@@ -158,11 +161,14 @@
             context.clearRect(0, 0, 1280, 40);
             context.clearRect(0, 0, 200, 50);
             context.fillText(text, 10, 25);
+             */
         };
         
         // utility function to display the text message in the input field
         function displayTextBottom(text) {
             //        console.log(text);
+            
+            /*
             document.getElementById("message").innerHTML=text;
             window.castReceiverManager.setApplicationState(text);
             
@@ -174,6 +180,7 @@
             //        context.clearRect(0, 0, 1280, 50);
             context.clearRect(0, 720 - 40, 1280, 50);
             context.fillText(text, 10, 720 - 10);
+             */
         };
         
         function CreateSingleVideoPlay(text)
@@ -237,13 +244,13 @@
         function DisconnectCast(text)
         {
             //if (window.castReceiverManager.getSenders().length == 0) {
-            displayText('sender DisconnectCast command close ');
+            //displayText('sender DisconnectCast command close ');   // 02-23-20 removed
             window.close();
             //}
         };
         function videoPlayEnded()
         {
-            displayText('video Play Ended');
+            //displayText('video Play Ended');    // 02-23-20 removed
 
             if (videoIndex < list.length)
             {
@@ -272,7 +279,7 @@
                 //console.log('CommandReceived CreateSingleVideoPlay');
                 //myVideo.loop = false;
                 PlayVideoSingle(text);
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);  // 02-23-20 removed
             }
             else if (text.ChromecastCommand == "VideoLoopPlayCommand")
             {
@@ -280,28 +287,28 @@
                 //myVideo.loop = true;
                 PlayVideoLoop(text);
                 //window.messageBus.send(event.senderId, 'received acknowledge');
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);  // 02-23-20 removed
             }
             else if (text.ChromecastCommand == "VideoListPlayCommand")
             {
                 //console.log('CommandReceived CreateListVideoPlay');
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);   // 02-23-20 removed
                 PlayVideoInTheList(text);
             }
             else if (text.ChromecastCommand == "VideoSinglePlayExternalCommand")
             {
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);   // 02-23-20 removed
                 PlayVideoSingleExternal(text);
             }
             else if (text.ChromecastCommand == "VideoSingleRepeatedPlayExternalCommand")
             {
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);   // 02-23-20 removed
                 PlayVideoSingleRepeatedExternal(text);
             }
             else if (text.ChromecastCommand == "CommandDisconnectCast")
             {
                 //console.log('CommandReceived CommandDisconnectCast'); CommandDisconnectCast
-                displayText(text.SendingMessage);
+                //displayText(text.SendingMessage);   // 02-23-20 removed
                 DisconnectCast(text);
             }
             else if (text.ChromecastCommand == "CommandWaitingMsg")
