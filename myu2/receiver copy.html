@@ -43,8 +43,7 @@
 <!--        <video id='videolist' width="1260" height="700" autoplay /video>-->
 
                 myVideo = document.getElementById('media');
-<!--                myVideo.loop = false;-->
-                myVideo.loop = true;
+                myVideo.loop = false;
                 myVideo.onended = function() {
                 
                 
@@ -64,8 +63,7 @@
             window.onload = function() {
                  listRepeat = false;
                  myVideo = document.getElementById('media');
-<!--                 myVideo.loop = false;-->
-                myVideo.loop = true;
+                 myVideo.loop = false;
                  myVideo.type = "video/mp4";
                  myVideo.onended = videoPlayEnded;
                  //function() {              };
@@ -228,7 +226,6 @@
             var fileURL = httpServerURL + "/" + list[videoIndex++];
             
             //displayText(fileURL);
-            myVideo.loop = false;
             myVideo.src = fileURL;
         };
 
@@ -254,7 +251,7 @@
         function videoPlayEnded()
         {
             //displayText('video Play Ended');    // 02-23-20 removed
-            myVideo.loop = true;
+
             if (videoIndex < list.length)
             {
                 //myVideo.src = list[videoIndex];
@@ -287,7 +284,7 @@
             else if (text.ChromecastCommand == "VideoLoopPlayCommand")
             {
                 //console.log('CommandReceived CreateLoopVideoPlay');
-<!--                myVideo.loop = true;-->
+                //myVideo.loop = true;
                 PlayVideoLoop(text);
                 //window.messageBus.send(event.senderId, 'received acknowledge');
                 //displayText(text.SendingMessage);  // 02-23-20 removed
